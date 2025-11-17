@@ -121,5 +121,4 @@ logger.info(
     ", ".join(active_sdks) if active_sdks else "none",
 )
 
-__version__ = "0.1.1"
 __all__ = ["utils"]

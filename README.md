@@ -72,10 +72,10 @@ pip install "revenium-middleware-google[all]"
 
 ```bash
 # Required for all examples
-export REVENIUM_METERING_API_KEY=your_revenium_key
+export REVENIUM_METERING_API_KEY=hak_your_revenium_key_here
 
 # For Google AI SDK (Gemini Developer API)
-export GOOGLE_API_KEY=your_google_api_key
+export GOOGLE_API_KEY=AIzaSy_your_google_api_key_here
 
 # For Vertex AI SDK (Google Cloud)
 export GOOGLE_CLOUD_PROJECT=your_project_id
@@ -94,7 +94,7 @@ python examples/getting_started_vertex_ai.py
 
 The middleware automatically tracks your Google AI usage and sends data to Revenium.
 
-**For complete examples and usage patterns, see [`examples/README.md`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/README.md).**
+**For complete examples and usage patterns, see [`examples/README.md`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/README.md).**
 
 ---
 
@@ -117,152 +117,16 @@ print(response.text)
 The middleware automatically meters all Google AI and Vertex AI calls. For production use, add metadata tracking to associate usage with organizations, users, or features.
 
 **For complete examples, see:**
-- [`examples/getting_started_google_ai.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/getting_started_google_ai.py) - Minimal Google AI SDK example with metadata fields documented
-- [`examples/getting_started_vertex_ai.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/getting_started_vertex_ai.py) - Minimal Vertex AI SDK example
-- [`examples/simple_test.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/simple_test.py) - Comprehensive test suite with metadata tracking
-- [`examples/simple_streaming_test.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/simple_streaming_test.py) - Complete streaming examples
-- [`examples/simple_embeddings_test.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/simple_embeddings_test.py) - Text embeddings examples
-- [`examples/README.md`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/README.md) - Complete examples documentation
-
-## SDK-Specific Integration
-
-### Automatic Provider Detection
-
-The middleware automatically chooses between Google AI SDK and Vertex AI SDK:
-
-| Detection Method | When Used | Example |
-|-----------------|-----------|---------|
-| **Google AI SDK** | When `google.genai` is imported and used | `from google import genai` |
-| **Vertex AI SDK** | When `vertexai` is imported and used | `import vertexai` |
-| **Dual Support** | When both SDKs are available | Automatic routing based on usage |
-
-**Key Point**: Both SDKs report as "Google" provider for unified analytics and consistent reporting.
-
-**See [`examples/getting_started_google_ai.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/getting_started_google_ai.py)** and **[`examples/getting_started_vertex_ai.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/getting_started_vertex_ai.py)** for complete working examples of both SDKs.
+- [`examples/getting_started_google_ai.py`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/getting_started_google_ai.py) - Minimal Google AI SDK example with metadata fields documented
+- [`examples/getting_started_vertex_ai.py`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/getting_started_vertex_ai.py) - Minimal Vertex AI SDK example
+- [`examples/simple_test.py`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/simple_test.py) - Comprehensive test suite with metadata tracking
+- [`examples/simple_streaming_test.py`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/simple_streaming_test.py) - Complete streaming examples
+- [`examples/simple_embeddings_test.py`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/simple_embeddings_test.py) - Text embeddings examples
+- [`examples/README.md`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/README.md) - Complete examples documentation
 
 ## Configuration
 
-Configure the middleware using environment variables:
-
-### Required Environment Variables
-
-#### For Google AI SDK (Gemini Developer API)
-```bash
-# Required
-export REVENIUM_METERING_API_KEY=your_revenium_api_key
-export GOOGLE_API_KEY=your_google_api_key
-
-# Optional: Revenium base URL (defaults to production)
-export REVENIUM_METERING_BASE_URL=https://api.revenium.ai
-export REVENIUM_LOG_LEVEL=INFO
-```
-
-#### For Vertex AI SDK (Google Cloud)
-```bash
-# Required
-export REVENIUM_METERING_API_KEY=your_revenium_api_key
-export GOOGLE_CLOUD_PROJECT=your_gcp_project_id
-
-# Recommended
-export GOOGLE_CLOUD_LOCATION=us-central1
-
-# Google Cloud Authentication (choose one)
-export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
-# OR use: gcloud auth application-default login
-
-# Optional: Revenium base URL (defaults to production)
-export REVENIUM_METERING_BASE_URL=https://api.revenium.ai
-export REVENIUM_LOG_LEVEL=INFO
-```
-
-### Using .env File
-
-Create a `.env` file in your project root:
-
-```bash
-# Required for all configurations
-REVENIUM_METERING_API_KEY=your_revenium_api_key
-
-# For Google AI SDK
-GOOGLE_API_KEY=your_google_api_key
-
-# For Vertex AI SDK
-GOOGLE_CLOUD_PROJECT=your_gcp_project_id
-GOOGLE_CLOUD_LOCATION=us-central1
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
-
-# Optional settings
-REVENIUM_METERING_BASE_URL=https://api.revenium.ai
-REVENIUM_LOG_LEVEL=DEBUG
-```
-
-### Google Cloud Authentication
-
-The Vertex AI SDK uses the standard Google Cloud authentication chain:
-
-1. **Service Account Key File** (recommended for production):
-   ```bash
-   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
-   ```
-
-2. **Application Default Credentials** (for development):
-   ```bash
-   gcloud auth application-default login
-   ```
-
-3. **Compute Engine/GKE Service Account** (automatic in GCP environments)
-
-4. **Environment Variables**:
-   ```bash
-   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
-   ```
-
-Ensure your credentials have the following permissions:
-- `aiplatform.endpoints.predict`
-- `ml.projects.predict` (for some models)
-
-### Configuration Variables
-
-| Variable | Required | SDK | Description |
-|----------|----------|-----|-------------|
-| `REVENIUM_METERING_API_KEY` | Yes | Both | Your Revenium API key |
-| `GOOGLE_API_KEY` | Yes | Google AI | Google AI API key (Gemini Developer API) |
-| `GOOGLE_CLOUD_PROJECT` | Yes | Vertex AI | Google Cloud project ID |
-| `GOOGLE_CLOUD_LOCATION` | No | Vertex AI | Google Cloud location (default: `us-central1`) |
-| `GOOGLE_APPLICATION_CREDENTIALS` | No | Vertex AI | Path to service account key file |
-| `REVENIUM_METERING_BASE_URL` | No | Both | Revenium API base URL |
-| `REVENIUM_LOG_LEVEL` | No | Both | Log level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
-
-## Streaming Support
-
-The middleware supports streaming responses for both SDKs with automatic usage tracking.
-
-**For complete streaming examples, see:**
-
-- [`examples/simple_streaming_test.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/simple_streaming_test.py) - Full streaming examples for both SDKs
-
-**Key features:**
-
-- Real-time token counting
-- Time-to-first-token tracking
-- Automatic usage logging when stream completes
-- Works with both Google AI SDK and Vertex AI SDK
-
-## Text Embeddings
-
-The middleware supports text embeddings with both SDKs. **Note:** Google AI SDK embeddings don't return token counts due to API limitations. Use Vertex AI SDK for full token tracking.
-
-**For complete embeddings examples, see:**
-
-- [`examples/simple_embeddings_test.py`](https://github.com/revenium/revenium-middleware-google-python/blob/main/examples/simple_embeddings_test.py) - Full embeddings examples for both SDKs
-
-**SDK Comparison:**
-
-| Feature | Google AI SDK | Vertex AI SDK |
-|---------|---------------|---------------|
-| **Embeddings Generation** | Full support | Full support |
-| **Token Counting** | No tokens (API limitation) | Full token counting |
-| **Usage Tracking** | Requests tracked | Full tracking |
+For detailed configuration options, environment variables, and advanced setup, see the [Configuration section in examples/README.md](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/README.md#configuration)
 
 ## Metadata Fields
 
@@ -282,121 +146,9 @@ Add business context to track usage by organization, user, task type, or custom 
 | `agent` | AI agent or bot identifier | Distinguish between multiple AI agents or automation workflows in your system |
 | `response_quality_score` | Custom quality rating (0.0-1.0) | Track user satisfaction or automated quality metrics for model performance analysis |
 
-**Resources:**
-- [API Reference](https://revenium.readme.io/reference/meter_ai_completion) - Complete metadata field documentation
+**Example usage:** See [`examples/getting_started_google_ai.py`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/getting_started_google_ai.py) for complete metadata implementation.
 
-## Testing Your Setup
-
-The middleware includes comprehensive test scripts to verify your configuration and ensure everything is working correctly. Each test script supports both Google AI SDK and Vertex AI SDK with intelligent provider selection.
-
-### Quick Test Commands
-
-```bash
-# Test Google AI SDK (default)
-python examples/simple_test.py
-
-# Test Vertex AI SDK
-python examples/simple_test.py --provider vertex-ai
-
-# Test streaming functionality
-python examples/simple_streaming_test.py --provider google-ai
-python examples/simple_streaming_test.py --provider vertex-ai
-
-# Test embeddings (Vertex AI recommended for full token counting)
-python examples/simple_embeddings_test.py --provider vertex-ai
-
-# Get help for any test script
-python examples/simple_test.py --help
-```
-
-### Environment Setup for Testing
-
-#### For Google AI SDK Testing
-```bash
-export GOOGLE_API_KEY=your_google_api_key
-export REVENIUM_METERING_API_KEY=your_revenium_key
-
-# Run the test
-python examples/simple_test.py --provider google-ai
-```
-
-#### For Vertex AI SDK Testing
-```bash
-export GOOGLE_CLOUD_PROJECT=your_project_id
-export GOOGLE_CLOUD_LOCATION=us-central1  # optional, defaults to us-central1
-export REVENIUM_METERING_API_KEY=your_revenium_key
-
-# Ensure Google Cloud authentication
-gcloud auth application-default login
-
-# Run the test
-python examples/simple_test.py --provider vertex-ai
-```
-
-### Expected Test Results
-
-**Successful Test Output:**
-```
-Revenium Google AI Middleware - Test Suite
-Testing: GOOGLE AI SDK
-======================================================================
-Google API Key: AIzaSyB8oD...
-Revenium Key: hak_6PVMBR...
-
-GOOGLE AI SDK EXAMPLES
-======================================================================
-Google AI SDK detected
-
-Google AI SDK - Basic Example
-==================================================
-Response: According to the supercomputer Deep Thought...
-Tokens: 12 input + 421 output = 433 total
-Zero-config integration successful!
-
-Google AI SDK - Enhanced Tracking Example
-==================================================
-Response: Okay, I'm ready to analyze the quarterly report...
-Enhanced metadata tracking enabled!
-
-======================================================================
-TEST RESULTS SUMMARY
-======================================================================
-PASS: google_ai_basic
-PASS: google_ai_enhanced
-
-Overall: 2/2 tests passed
-Success! Check your Revenium dashboard for usage data
-```
-
-**Failed Test Output:**
-```
-Missing required environment variable for Google AI SDK
-   GOOGLE_API_KEY not found
-
-Setup Instructions:
-   1. Get your API key from: https://aistudio.google.com/app/apikey
-   2. Set the environment variable:
-      export GOOGLE_API_KEY=your_google_api_key
-   3. Run the test again
-```
-
-### Test Script Features
-
-- **Intelligent Provider Selection**: Automatically tests only the selected provider
-- **Environment Validation**: Checks for required environment variables before testing
-- **Clear Error Messages**: Provides specific setup instructions when configuration is missing
-- **Comprehensive Coverage**: Tests basic functionality, enhanced metadata, streaming, and embeddings
-- **User-Friendly Output**: Color-coded results with clear success/failure indicators
-
-### Available Test Scripts
-
-| Script | Purpose | Key Features |
-|--------|---------|--------------|
-| `simple_test.py` | Basic functionality testing | Chat completion, metadata tracking |
-| `simple_streaming_test.py` | Streaming functionality | Real-time token counting, streaming responses |
-| `simple_embeddings_test.py` | Embeddings testing | Text embeddings, token counting (Vertex AI) |
-
-All test scripts support the `--provider` flag to specify which SDK to test.
+**API Reference:** [Complete metadata field documentation](https://revenium.readme.io/reference/meter_ai_completion)
 
 ## Troubleshooting
 
@@ -458,22 +210,12 @@ pip install "revenium-middleware-google[vertex]"
 
 ## Logging
 
-This module uses Python's standard logging system. You can control the log level by setting the `REVENIUM_LOG_LEVEL` environment variable:
+This module uses Python's standard logging system. Control the log level with the `REVENIUM_LOG_LEVEL` environment variable:
 
 ```bash
-# Enable debug logging
-export REVENIUM_LOG_LEVEL=DEBUG
-
-# Or when running your script
-REVENIUM_LOG_LEVEL=DEBUG python your_script.py
+export REVENIUM_LOG_LEVEL=DEBUG  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+python your_script.py
 ```
-
-Available log levels:
-- `DEBUG`: Detailed debugging information
-- `INFO`: General information (default)
-- `WARNING`: Warning messages only
-- `ERROR`: Error messages only
-- `CRITICAL`: Critical error messages only
 
 ## Compatibility
 
@@ -497,19 +239,19 @@ For detailed documentation, visit [docs.revenium.io](https://docs.revenium.io)
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/revenium/revenium-middleware-google-python/blob/main/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/CONTRIBUTING.md)
 
 ## Code of Conduct
 
-See [CODE_OF_CONDUCT.md](https://github.com/revenium/revenium-middleware-google-python/blob/main/CODE_OF_CONDUCT.md)
+See [CODE_OF_CONDUCT.md](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/CODE_OF_CONDUCT.md)
 
 ## Security
 
-See [SECURITY.md](https://github.com/revenium/revenium-middleware-google-python/blob/main/SECURITY.md)
+See [SECURITY.md](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/SECURITY.md)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/revenium/revenium-middleware-google-python/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/LICENSE) file for details.
 
 ## Support
 
