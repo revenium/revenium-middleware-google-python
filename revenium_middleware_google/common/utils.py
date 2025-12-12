@@ -17,6 +17,7 @@ from revenium_middleware import client, run_async_in_thread, shutdown_event
 from .types import UsageData, OperationType, ProviderMetadata, TokenCounts
 from .exceptions import MeteringError, APIResponseError, safe_extract
 from .protocols import has_token_counts, safe_getattr, get_token_count
+from . import trace_fields
 
 logger = logging.getLogger("revenium_middleware.extension")
 
@@ -199,6 +200,80 @@ async def log_token_usage(
         completion_args["response_quality_score"] = usage_metadata.get(
             "response_quality_score"
         )
+
+    # Add trace visualization fields (v0.2.0+)
+    # These fields support both environment variables and usage_metadata parameters
+    # Priority: usage_metadata > environment variable
+
+    # Environment field
+    environment = (
+        usage_metadata.get("environment") or
+        trace_fields.get_environment()
+    )
+    if environment:
+        completion_args["environment"] = environment
+
+    # Region field
+    region = (
+        usage_metadata.get("region") or
+        trace_fields.get_region()
+    )
+    if region:
+        completion_args["region"] = region
+
+    # Credential alias field
+    credential_alias = (
+        usage_metadata.get("credential_alias") or
+        usage_metadata.get("credentialAlias") or
+        trace_fields.get_credential_alias()
+    )
+    if credential_alias:
+        completion_args["credential_alias"] = credential_alias
+
+    # Trace type field
+    trace_type = (
+        usage_metadata.get("trace_type") or
+        usage_metadata.get("traceType") or
+        trace_fields.get_trace_type()
+    )
+    if trace_type:
+        # Validate if coming from usage_metadata
+        if usage_metadata.get("trace_type") or usage_metadata.get("traceType"):
+            trace_type = trace_fields.validate_trace_type(trace_type)
+        if trace_type:
+            completion_args["trace_type"] = trace_type
+
+    # Trace name field
+    trace_name = (
+        usage_metadata.get("trace_name") or
+        usage_metadata.get("traceName") or
+        trace_fields.get_trace_name()
+    )
+    if trace_name:
+        # Validate if coming from usage_metadata
+        if usage_metadata.get("trace_name") or usage_metadata.get("traceName"):
+            trace_name = trace_fields.validate_trace_name(trace_name)
+        if trace_name:
+            completion_args["trace_name"] = trace_name
+
+    # Parent transaction ID field
+    parent_transaction_id = (
+        usage_metadata.get("parent_transaction_id") or
+        usage_metadata.get("parentTransactionId") or
+        trace_fields.get_parent_transaction_id()
+    )
+    if parent_transaction_id:
+        completion_args["parent_transaction_id"] = parent_transaction_id
+
+    # Transaction name field (with fallback to task_type)
+    transaction_name = trace_fields.get_transaction_name(usage_metadata)
+    if transaction_name:
+        completion_args["transaction_name"] = transaction_name
+
+    # Retry number field
+    retry_number = trace_fields.get_retry_number()
+    if retry_number > 0:
+        completion_args["retry_number"] = retry_number
 
     # Build subscriber object - support both nested and flat formats
     subscriber_data = {}

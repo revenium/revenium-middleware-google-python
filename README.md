@@ -9,6 +9,8 @@
 
 A middleware library for metering and monitoring Google AI services usage in Python applications. Supports both Google AI SDK (Gemini Developer API) and Vertex AI SDK with flexible optional dependencies.
 
+**For complete examples and setup instructions, see [`examples/README.md`](https://github.com/revenium/revenium-middleware-google-python/blob/HEAD/examples/README.md)**
+
 ## Features
 
 - **Precise Usage Tracking**: Monitor tokens, costs, and request counts for Google AI services
@@ -72,38 +74,63 @@ cd my-google-ai-project
 
 ```bash
 # Create virtual environment
-python -m venv venv
+python -m venv .venv
 
 # Activate virtual environment
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 ### 3. Install the Package
 
 ```bash
 # Install with both SDKs (recommended)
-pip install "revenium-middleware-google[all]"
+pip install "revenium-middleware-google[all]" python-dotenv
 ```
 
-### 4. Set Environment Variables
+### 4. Configure Environment Variables
+
+Create a `.env` file in your project directory:
 
 ```bash
-# Required for all examples
-export REVENIUM_METERING_API_KEY=hak_your_revenium_key_here
+# Required
+REVENIUM_METERING_API_KEY=hak_your_revenium_api_key
 
 # For Google AI SDK (Gemini Developer API)
-export GOOGLE_API_KEY=AIzaSy_your_google_api_key_here
+GOOGLE_API_KEY=your_google_api_key
 
 # For Vertex AI SDK (Google Cloud)
-export GOOGLE_CLOUD_PROJECT=your_project_id
+GOOGLE_CLOUD_PROJECT=your_gcp_project_id
+GOOGLE_CLOUD_LOCATION=us-central1
+
+# Optional
+# REVENIUM_LOG_LEVEL=DEBUG
+```
+
+**For Vertex AI:** Authenticate with Google Cloud:
+```bash
 gcloud auth application-default login
 ```
 
 ### 5. Run Your First Example
 
-Create a file `test.py`:
+Download and run an example from the repository:
+
+```bash
+# For Google AI SDK
+curl -O https://raw.githubusercontent.com/revenium/revenium-middleware-google-python/main/examples/getting_started_google_ai.py
+python getting_started_google_ai.py
+
+# For Vertex AI SDK
+curl -O https://raw.githubusercontent.com/revenium/revenium-middleware-google-python/main/examples/getting_started_vertex_ai.py
+python getting_started_vertex_ai.py
+```
+
+Or create a file `test.py` with this simple code:
 
 ```python
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+
 import revenium_middleware_google
 from google import genai
 
@@ -179,6 +206,27 @@ Add business context to track usage by organization, user, task type, or custom 
 
 **API Reference:** [Complete metadata field documentation](https://revenium.readme.io/reference/meter_ai_completion)
 
+### Trace Visualization Fields (v0.2.0+)
+
+Enhanced observability fields for distributed tracing and analytics. These can be set via environment variables or passed in `usage_metadata`:
+
+| Field | Environment Variable | Description | Use Case |
+|-------|---------------------|-------------|----------|
+| `environment` | `REVENIUM_ENVIRONMENT` | Deployment environment (e.g., "production", "staging") | Track usage across different deployment environments; auto-detects from `ENVIRONMENT`, `DEPLOYMENT_ENV` |
+| `region` | `REVENIUM_REGION` | Cloud region identifier (e.g., "us-east-1", "eastus") | Multi-region deployment tracking; auto-detects from `AWS_REGION`, `AZURE_REGION`, `GCP_REGION`, `GOOGLE_CLOUD_REGION` |
+| `credential_alias` | `REVENIUM_CREDENTIAL_ALIAS` | Human-readable API key name (e.g., "prod-google-key") | Track which credential was used for credential rotation and security auditing |
+| `trace_type` | `REVENIUM_TRACE_TYPE` | Workflow category identifier (max 128 chars) | Group similar workflows (e.g., "customer-support", "data-analysis") for analytics |
+| `trace_name` | `REVENIUM_TRACE_NAME` | Human-readable trace label (max 256 chars) | Label trace instances (e.g., "Customer Support Chat", "Document Analysis") |
+| `parent_transaction_id` | `REVENIUM_PARENT_TRANSACTION_ID` | Parent transaction ID for distributed tracing | Link child operations to parent transactions across services |
+| `transaction_name` | `REVENIUM_TRANSACTION_NAME` | Human-friendly operation name | Label individual operations (e.g., "Generate Response", "Analyze Sentiment") |
+
+**Note:** `operation_type` and `operation_subtype` are automatically detected by the middleware based on the API method and request parameters.
+
+**Resources:**
+- [API Reference](https://revenium.readme.io/reference/meter_ai_completion) - Complete metadata field documentation
+- [`.env.example`](.env.example) - Environment variable configuration examples
+- [`examples/trace_visualization_example.py`](examples/trace_visualization_example.py) - Comprehensive trace visualization examples
+
 ## Troubleshooting
 
 ### Common Issues
@@ -197,7 +245,7 @@ Add business context to track usage by organization, user, task type, or custom 
 Enable debug logging to see provider detection and routing decisions:
 
 ```bash
-export REVENIUM_LOG_LEVEL=DEBUG
+# export REVENIUM_LOG_LEVEL=DEBUG
 python your_script.py
 ```
 
@@ -239,12 +287,19 @@ pip install "revenium-middleware-google[vertex]"
 
 ## Logging
 
-This module uses Python's standard logging system. Control the log level with the `REVENIUM_LOG_LEVEL` environment variable:
+Control logging with the `REVENIUM_LOG_LEVEL` environment variable in your `.env` file:
 
 ```bash
-export REVENIUM_LOG_LEVEL=DEBUG  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-python your_script.py
+# Add to your .env file
+REVENIUM_LOG_LEVEL=DEBUG
 ```
+
+Available log levels:
+- `DEBUG`: Detailed debugging information (shows provider detection, routing decisions, token counts)
+- `INFO`: General information messages (default)
+- `WARNING`: Warning messages only
+- `ERROR`: Error messages only
+- `CRITICAL`: Critical error messages only
 
 ## Compatibility
 

@@ -10,7 +10,7 @@ examples = ["*.md", ".env.example"]
 
 [project]
 name = "revenium-middleware-google"
-version = "0.1.2"
+version = "0.2.0"
 description = "A Python library that meters Google AI API usage to Revenium with support for both Gemini Developer API and Vertex AI."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -20,7 +20,7 @@ authors = [
 ]
 dependencies = [
   "wrapt",
-  "revenium_middleware>=0.2.7"
+  "revenium_middleware>=0.4.0"
 ]
 keywords = ["google", "gemini", "vertex-ai", "middleware", "logging", "token-usage", "metering", "revenium", "ai", "llm"]
 classifiers = [

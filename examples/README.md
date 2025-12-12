@@ -8,10 +8,10 @@ This directory contains working examples demonstrating how to use the Revenium m
 
 ```bash
 # Create virtual environment
-python -m venv venv
+python -m venv .venv
 
 # Activate virtual environment
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 ### 2. Install Dependencies
@@ -29,21 +29,34 @@ pip install "revenium-middleware-google[all]"
 
 ### 3. Environment Setup
 
-Create a `.env` file or export environment variables:
+Create a `.env` file in your project directory:
 
 **For Google AI SDK:**
 ```bash
-export REVENIUM_METERING_API_KEY="your-revenium-api-key"
-export GOOGLE_API_KEY="your-google-api-key"
+# Required
+REVENIUM_METERING_API_KEY=hak_your_revenium_api_key
+GOOGLE_API_KEY=your_google_api_key
+
+# Optional
+# REVENIUM_LOG_LEVEL=DEBUG
 ```
 
 **For Vertex AI SDK:**
 ```bash
-export REVENIUM_METERING_API_KEY="your-revenium-api-key"
-export GOOGLE_CLOUD_PROJECT="your-gcp-project-id"
-export GOOGLE_CLOUD_LOCATION="us-central1"  # optional
+# Required
+REVENIUM_METERING_API_KEY=hak_your_revenium_api_key
+GOOGLE_CLOUD_PROJECT=your_gcp_project_id
 
-# Authenticate with Google Cloud
+# Recommended
+GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
+
+# Optional
+# REVENIUM_LOG_LEVEL=DEBUG
+```
+
+Then authenticate with Google Cloud (Vertex AI only):
+```bash
 gcloud auth application-default login
 ```
 
@@ -175,58 +188,34 @@ python examples/simple_embeddings_test.py --provider vertex-ai
 
 ## Configuration
 
-Configure the middleware using environment variables:
+The middleware requires environment variables for authentication and configuration.
 
-### Required Environment Variables
+Create a `.env` file in your project root. The examples automatically load this file using `python-dotenv`.
 
-#### For Google AI SDK (Gemini Developer API)
+**For Google AI SDK:**
 ```bash
 # Required
-export REVENIUM_METERING_API_KEY=your_revenium_api_key
-export GOOGLE_API_KEY=your_google_api_key
-
-# Optional: Revenium base URL (defaults to production)
-export REVENIUM_METERING_BASE_URL=https://api.revenium.ai
-export REVENIUM_LOG_LEVEL=INFO
-```
-
-#### For Vertex AI SDK (Google Cloud)
-```bash
-# Required
-export REVENIUM_METERING_API_KEY=your_revenium_api_key
-export GOOGLE_CLOUD_PROJECT=your_gcp_project_id
-
-# Recommended
-export GOOGLE_CLOUD_LOCATION=us-central1
-
-# Google Cloud Authentication (choose one)
-export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
-# OR use: gcloud auth application-default login
-
-# Optional: Revenium base URL (defaults to production)
-export REVENIUM_METERING_BASE_URL=https://api.revenium.ai
-export REVENIUM_LOG_LEVEL=INFO
-```
-
-### Using .env File
-
-Create a `.env` file in your project root:
-
-```bash
-# Required for all configurations
-REVENIUM_METERING_API_KEY=your_revenium_api_key
-
-# For Google AI SDK
+REVENIUM_METERING_API_KEY=hak_your_revenium_api_key
 GOOGLE_API_KEY=your_google_api_key
 
-# For Vertex AI SDK
+# Optional
+# REVENIUM_METERING_BASE_URL=https://api.revenium.ai
+# REVENIUM_LOG_LEVEL=DEBUG
+```
+
+**For Vertex AI SDK:**
+```bash
+# Required
+REVENIUM_METERING_API_KEY=hak_your_revenium_api_key
 GOOGLE_CLOUD_PROJECT=your_gcp_project_id
+
+# Recommended
 GOOGLE_CLOUD_LOCATION=us-central1
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
 
-# Optional settings
-REVENIUM_METERING_BASE_URL=https://api.revenium.ai
-REVENIUM_LOG_LEVEL=DEBUG
+# Optional
+# REVENIUM_METERING_BASE_URL=https://api.revenium.ai
+# REVENIUM_LOG_LEVEL=DEBUG
 ```
 
 ### Google Cloud Authentication
@@ -234,9 +223,7 @@ REVENIUM_LOG_LEVEL=DEBUG
 The Vertex AI SDK uses the standard Google Cloud authentication chain:
 
 1. **Service Account Key File** (recommended for production):
-   ```bash
-   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
-   ```
+   - Set `GOOGLE_APPLICATION_CREDENTIALS` in your `.env` file to the path of your service account key file
 
 2. **Application Default Credentials** (for development):
    ```bash
@@ -244,11 +231,6 @@ The Vertex AI SDK uses the standard Google Cloud authentication chain:
    ```
 
 3. **Compute Engine/GKE Service Account** (automatic in GCP environments)
-
-4. **Environment Variables**:
-   ```bash
-   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
-   ```
 
 Ensure your credentials have the following permissions:
 - `aiplatform.endpoints.predict`
@@ -339,30 +321,6 @@ python examples/simple_embeddings_test.py --provider vertex-ai
 python examples/simple_test.py --help
 ```
 
-### Environment Setup for Testing
-
-#### For Google AI SDK Testing
-```bash
-export GOOGLE_API_KEY=your_google_api_key
-export REVENIUM_METERING_API_KEY=your_revenium_key
-
-# Run the test
-python examples/simple_test.py --provider google-ai
-```
-
-#### For Vertex AI SDK Testing
-```bash
-export GOOGLE_CLOUD_PROJECT=your_project_id
-export GOOGLE_CLOUD_LOCATION=us-central1  # optional, defaults to us-central1
-export REVENIUM_METERING_API_KEY=your_revenium_key
-
-# Ensure Google Cloud authentication
-gcloud auth application-default login
-
-# Run the test
-python examples/simple_test.py --provider vertex-ai
-```
-
 ### Expected Test Results
 
 **Successful Test Output:**
@@ -405,8 +363,8 @@ Missing required environment variable for Google AI SDK
 
 Setup Instructions:
    1. Get your API key from: https://aistudio.google.com/app/apikey
-   2. Set the environment variable:
-      export GOOGLE_API_KEY=your_google_api_key
+   2. Add it to your .env file:
+      GOOGLE_API_KEY=your_google_api_key
    3. Run the test again
 ```
 
@@ -441,11 +399,16 @@ pip install "revenium-middleware-google[all]"
 
 ### Environment Variables Not Set
 
+Check if your `.env` file exists and contains the required variables:
+
 ```bash
-# Verify environment variables
-echo $REVENIUM_METERING_API_KEY
-echo $GOOGLE_API_KEY
-echo $GOOGLE_CLOUD_PROJECT
+# Verify .env file exists
+ls -la .env
+
+# Check if .env file contains required variables
+cat .env | grep REVENIUM_METERING_API_KEY
+cat .env | grep GOOGLE_API_KEY  # for Google AI SDK
+cat .env | grep GOOGLE_CLOUD_PROJECT  # for Vertex AI SDK
 ```
 
 ### Vertex AI Authentication Errors
@@ -460,10 +423,15 @@ gcloud auth application-default print-access-token
 
 ### Debug Mode
 
-Enable debug logging to see detailed middleware activity:
+Enable debug logging by uncommenting in your `.env` file:
 
 ```bash
-export REVENIUM_LOG_LEVEL=DEBUG
+# In .env file
+# REVENIUM_LOG_LEVEL=DEBUG  # Uncomment this line
+```
+
+Then run your example:
+```bash
 python examples/getting_started_google_ai.py
 ```
 

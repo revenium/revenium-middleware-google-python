@@ -21,6 +21,13 @@ Installation:
     pip install revenium-middleware-google[vertex]
 """
 
+# Load environment variables from .env file if present
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, using environment variables
+
 import revenium_middleware_google
 import vertexai
 from vertexai.generative_models import GenerativeModel

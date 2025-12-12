@@ -17,6 +17,13 @@ Installation:
     pip install revenium-middleware-google[genai]
 """
 
+# Load environment variables from .env file if present
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, using environment variables
+
 import revenium_middleware_google
 from google import genai
 
